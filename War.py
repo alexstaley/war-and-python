@@ -15,6 +15,9 @@ class Card:
         0 -> '2', 1 -> '3', 2 -> '4', ... 9 -> "Jack", 10 -> "Queen", ...
         :param value: int [0-12]
         """
+        if value < 0 or value > 12:
+            raise ValueError(f"value {value} must be between [0-12]")
+
         self.value = value
         if value == 9:
             self.faceValue = "Jack"
@@ -30,3 +33,4 @@ class Card:
 
 if __name__ == '__main__':
     print("Mic check 1 2")
+    print(Card(15))
