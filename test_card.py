@@ -27,6 +27,7 @@ class TestCard(unittest.TestCase):
     def test_card_creation_bounds(self):
         with self.assertRaises(ValueError):
             Card(-1)
+        with self.assertRaises(ValueError):
             Card(13)
 
 
