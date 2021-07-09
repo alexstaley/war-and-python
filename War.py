@@ -27,24 +27,24 @@ def show(value):
 
 def deal():
     """
-    Generates a list (deck) of 52 integers (card values), 4 each of the values [0-12].
-    Ordered at random, deals associated Card objects (cards) of half the elements of
-    this list, chosen at random, to each of two deque objects (hands), returning both hands.
+    Generates a list (deck) of 52 integers (cards), 4 each of the values [0-12].
+    Deals half the cards, chosen at random, to each of two hands, returning both hands.
     :return: a tuple of two double-ended queue (deque) objects
     """
-    # Initialize queues and generate a deck of card values [0, 0, 0, 0, 1, 1, 1, 1, 2, ..., 12, 12, 12]
-    myCards = co.deque()
-    yourCards = co.deque()
+    # Initialize queues and generate a deck of card values
+    # [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, ..., 11, 11, 12, 12, 12, 12]
+    playerHand = co.deque()
+    opponentHand = co.deque()
     deck = [c % 13 for c in range(52)]
 
     # Deal the entire deck in random order, alternating between players
     while deck:
         u = rd.randint(0, len(deck) - 1)
-        yourCards.append(deck.pop(u))
+        opponentHand.append(deck.pop(u))
         i = rd.randint(0, len(deck) - 1)
-        myCards.append(deck.pop(i))
+        playerHand.append(deck.pop(i))
 
-    return myCards, yourCards
+    return playerHand, opponentHand
 
 
 def takeATurn(playerHand, opponentHand):
@@ -54,6 +54,7 @@ def takeATurn(playerHand, opponentHand):
     :param opponentHand: collections.deque object representing the opponent's hand
     :return: tuple containing the players' hands after a turn (including all necessary wars) has resolved
     """
+    # Draw cards; guard against empty hands
     try:
         playerCard = playerHand.popleft()
         opponentCard = opponentHand.popleft()
@@ -74,7 +75,7 @@ def takeATurn(playerHand, opponentHand):
         # War
         playerHand, opponentHand, table = makeWar(playerHand, opponentHand, table)
     else:
-        # Winner collects; ready for new hand
+        # Winner collects cards on the table
         if playerCard < opponentCard:
             for card in table:
                 opponentHand.append(card)
@@ -88,12 +89,14 @@ def takeATurn(playerHand, opponentHand):
 def makeWar(playerHand, opponentHand, table):
     """
     Handles cards in the players' hands and on the table in the event of a war,
-    handling the case of serial wars recursively. Returns with one hand empty if the game ends.
+    handling the case of serial wars recursively.
+    Returns with one hand empty if the game ends; with the table empty if/when the war ends.
     :param playerHand: collections.deque object representing the user's hand
     :param opponentHand: collections.deque object representing the opponent's hand
     :param table: list of integers representing the cards currently on the table
     :return: tuple containing both players' hands, plus the list of cards on the table
     """
+    # Put war cards face down on the table; return properly if the game ends during/after this process
     print("This means WAR!")
     try:
         print("\tLaying three cards each face down on the table...")
@@ -116,24 +119,23 @@ def makeWar(playerHand, opponentHand, table):
         print("Your opponent is out of cards!")
         return playerHand, None, table
 
-    # Show cards to settle war
+    # Show next cards to settle war
     playerCard = playerHand.popleft()
     opponentCard = opponentHand.popleft()
+    print(f'\tYOUR NEW CARD:\t\t\t{show(playerCard)}\n\tOPPONENT\'S NEW CARD:\t{show(opponentCard)}')
     table.append(playerCard)
     table.append(opponentCard)
-    print(f'\tYOUR NEW CARD:\t\t\t{show(playerCard)}\n\tOPPONENT\'S NEW CARD:\t{show(opponentCard)}')
 
-    # If war ends, show all cards on the table and distribute them to the winner
+    # If war ends, show all cards on the table and distribute them to the winner; return
     if playerCard != opponentCard:
-        print(f'\tYou {"lost" if playerCard < opponentCard else "won"} the war! Cards collected:')
-        # TODO: Clean up card display, remove last commas
+        print(f'\tYou {"lost" if playerCard < opponentCard else "won"} the war! Cards collected:', end=' ')
         if playerCard < opponentCard:
             for card in table:
-                print('\t', show(card), end=', ')
+                print(show(card), end=' ')
                 opponentHand.append(card)
         else:
             for card in table:
-                print('\t', show(card), end=', ')
+                print(show(card), end=' ')
                 playerHand.append(card)
         print('\n')
         return playerHand, opponentHand, None
@@ -145,6 +147,7 @@ def makeWar(playerHand, opponentHand, table):
 if __name__ == '__main__':
     myCards, yourCards = deal()
     while myCards and yourCards:
+        # TODO: Implement user control
         myCards, yourCards = takeATurn(myCards, yourCards)
     if myCards:
         print("You win!")
