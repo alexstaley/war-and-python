@@ -112,19 +112,19 @@ def makeWar(playerHand, opponentHand, table, control):
             table.append(opponentHand.popleft())
     except IndexError:
         # Someone ran out of cards mid-war; report status and return with losing hand == None
-        print(f'{"You" if not playerHand else "Your opponent"} just ran out of cards mid-war!')
-        if not playerHand:
-            return None, opponentHand, table
-        else:
+        print(f'{"Your opponent" if not opponentHand else "You"} just ran out of cards mid-war!')
+        if not opponentHand:
             return playerHand, None, table
+        else:
+            return None, opponentHand, table
 
     # Someone just put their last three cards face down; report status and return with losing hand == None
-    if not playerHand:
-        print("Uh oh... you're out of cards!")
-        return None, opponentHand, table
     if not opponentHand:
         print("Your opponent is out of cards!")
         return playerHand, None, table
+    if not playerHand:
+        print("Uh oh... you're out of cards!")
+        return None, opponentHand, table
 
     # If playing manually, trigger next draw
     if control == 'M':

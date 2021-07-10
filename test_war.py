@@ -145,6 +145,20 @@ class TestMakeWar(unittest.TestCase):
 
         self.assertEqual(len(hand2), 18)
 
+    def test_human_wins_seven_war_marathon(self):
+        # Tests that rare seven-war case that leaves all cards on the table leads to a human win
+        handHuman = co.deque()
+        hand2 = co.deque()
+        for _ in range(25):
+            handHuman.append(0)
+            hand2.append(0)
+        table = [5, 5]
+
+        handHuman, hand2, table = makeWar(handHuman, hand2, table, 'A')
+
+        self.assertIsNotNone(handHuman)
+        self.assertIsNone(hand2)
+
 
 if __name__ == '__main__':
     unittest.main()
