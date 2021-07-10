@@ -51,10 +51,10 @@ class TestTakeATurn(unittest.TestCase):
         hand1.append(1)
         hand1.append(2)
 
-        hand1, hand2 = takeATurn(hand1, hand2)
+        hand1, hand2 = takeATurn(hand1, hand2, 'A')
 
         self.assertIn(2, hand1)
-        self.assertFalse(hand2)
+        self.assertIsNone(hand2)
 
     def test_winner_gets_cards(self):
         # Tests that the cards in a regular hand go to the winner
@@ -63,9 +63,8 @@ class TestTakeATurn(unittest.TestCase):
         hand1.append(1)
         hand2.append(2)
 
-        hand1, hand2 = takeATurn(hand1, hand2)
+        hand1, hand2 = takeATurn(hand1, hand2, 'A')
 
-        self.assertFalse(hand1)
         self.assertIn(1, hand2)
         self.assertIn(2, hand2)
 
@@ -82,9 +81,24 @@ class TestMakeWar(unittest.TestCase):
         hand2.append(2)
         table = [5, 5]
 
-        hand1, hand2, table = makeWar(hand1, hand2, table)
+        hand1, hand2, table = makeWar(hand1, hand2, table, 'A')
 
         self.assertIsNone(table)
+
+    def test_not_enough_cards_for_war(self):
+        # Tests that a player running out of cards mid-war ends the game gracefully
+        hand1 = co.deque()
+        hand2 = co.deque()
+        for _ in range(2):
+            hand1.append(0)
+            hand2.append(0)
+        hand1.append(1)
+        hand1.append(2)
+        table = [5, 5]
+
+        hand1, hand2, table = makeWar(hand1, hand2, table, 'A')
+
+        self.assertIsNone(hand2)
 
     def test_multiple_wars_take_table(self):
         # Tests that serial wars leave the table empty
@@ -97,7 +111,7 @@ class TestMakeWar(unittest.TestCase):
         hand2.append(2)
         table = [5, 5]
 
-        hand1, hand2, table = makeWar(hand1, hand2, table)
+        hand1, hand2, table = makeWar(hand1, hand2, table, 'A')
 
         self.assertIsNone(table)
 
@@ -112,7 +126,7 @@ class TestMakeWar(unittest.TestCase):
         hand2.append(2)
         table = [5, 5]
 
-        hand1, hand2, table = makeWar(hand1, hand2, table)
+        hand1, hand2, table = makeWar(hand1, hand2, table, 'A')
 
         self.assertFalse(hand1)
 
@@ -127,7 +141,7 @@ class TestMakeWar(unittest.TestCase):
         hand2.append(2)
         table = [5, 5]
 
-        hand1, hand2, table = makeWar(hand1, hand2, table)
+        hand1, hand2, table = makeWar(hand1, hand2, table, 'A')
 
         self.assertEqual(len(hand2), 18)
 

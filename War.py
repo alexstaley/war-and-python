@@ -31,7 +31,7 @@ def deal():
     Deals half the cards, chosen at random, to each of two hands, returning both hands.
     :return: a tuple of two double-ended queue (deque) objects
     """
-    # Initialize queues and generate a deck of card values
+    # Initialize queues and generate a deck of card values:
     # [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, ..., 11, 11, 12, 12, 12, 12]
     playerHand = co.deque()
     opponentHand = co.deque()
@@ -47,11 +47,12 @@ def deal():
     return playerHand, opponentHand
 
 
-def takeATurn(playerHand, opponentHand):
+def takeATurn(playerHand, opponentHand, control):
     """
     Resolves a turn of war given each player's hand. Wraps the recursive 'makeWar' function.
     :param playerHand: collections.deque object representing the user's hand
     :param opponentHand: collections.deque object representing the opponent's hand
+    :param control: controls if play should continue automatically or manually
     :return: tuple containing the players' hands after a turn (including all necessary wars) has resolved
     """
     # Draw cards; guard against empty hands
@@ -68,25 +69,30 @@ def takeATurn(playerHand, opponentHand):
 
     # Show cards
     table = [playerCard, opponentCard]
-    print(f'YOUR CARD:\t\t\t{show(playerCard)}\nOPPONENT\'S CARD:\t{show(opponentCard)}')
+    print(f'\tYOUR CARD:\t\t\t{show(playerCard)}\n\tOPPONENT\'S CARD:\t{show(opponentCard)}')
 
     # Distribute cards to the winner; make war if necessary
     if playerCard == opponentCard:
         # War
-        playerHand, opponentHand, table = makeWar(playerHand, opponentHand, table)
+        playerHand, opponentHand, table = makeWar(playerHand, opponentHand, table, control)
     else:
-        # Winner collects cards on the table
+        # No war; winner collects cards on the table
         if playerCard < opponentCard:
+            # Hand lost
             for card in table:
                 opponentHand.append(card)
         else:
+            # Hand won
             for card in table:
                 playerHand.append(card)
+        # Report status
+        print(f'You {"won" if playerCard > opponentCard else "lost"} this hand...'
+              f'{len(playerHand)} cards in your hand, {len(opponentHand)} in your opponent\'s.')
 
     return playerHand, opponentHand
 
 
-def makeWar(playerHand, opponentHand, table):
+def makeWar(playerHand, opponentHand, table, control):
     """
     Handles cards in the players' hands and on the table in the event of a war,
     handling the case of serial wars recursively.
@@ -94,24 +100,25 @@ def makeWar(playerHand, opponentHand, table):
     :param playerHand: collections.deque object representing the user's hand
     :param opponentHand: collections.deque object representing the opponent's hand
     :param table: list of integers representing the cards currently on the table
+    :param control: controls if play should continue automatically or manually
     :return: tuple containing both players' hands, plus the list of cards on the table
     """
-    # Put war cards face down on the table; return properly if the game ends during/after this process
+    # Put war cards face down on the table; guard against the game ending during/after this process
     print("This means WAR!")
     try:
-        print("\tLaying three cards each face down on the table...")
+        print("Laying three cards each face down on the table...")
         for _ in range(3):
             table.append(playerHand.popleft())
             table.append(opponentHand.popleft())
     except IndexError:
+        # Someone ran out of cards mid-war; report status and return with losing hand == None
         print(f'{"You" if not playerHand else "Your opponent"} just ran out of cards mid-war!')
-        # Someone ran out of cards mid-war; the game is over
         if not playerHand:
             return None, opponentHand, table
         else:
             return playerHand, None, table
 
-    # Someone just put their last three cards face down; the game is over
+    # Someone just put their last three cards face down; report status and return with losing hand == None
     if not playerHand:
         print("Uh oh... you're out of cards!")
         return None, opponentHand, table
@@ -119,36 +126,62 @@ def makeWar(playerHand, opponentHand, table):
         print("Your opponent is out of cards!")
         return playerHand, None, table
 
-    # Show next cards to settle war
+    # If playing manually, trigger next draw
+    if control == 'M':
+        input("Hit any key to continue.")
+
+    # Draw next cards to settle war
     playerCard = playerHand.popleft()
     opponentCard = opponentHand.popleft()
     print(f'\tYOUR NEW CARD:\t\t\t{show(playerCard)}\n\tOPPONENT\'S NEW CARD:\t{show(opponentCard)}')
     table.append(playerCard)
     table.append(opponentCard)
 
-    # If war ends, show all cards on the table and distribute them to the winner; return
+    # If war ends, show all cards on the table and distribute them to the winner; return both hands
     if playerCard != opponentCard:
-        print(f'\tYou {"lost" if playerCard < opponentCard else "won"} the war! Cards collected:', end=' ')
+        print(f'You {"lost" if playerCard < opponentCard else "won"} the war! Cards collected:', end=' ')
         if playerCard < opponentCard:
+            # Hand lost
             for card in table:
                 print(show(card), end=' ')
                 opponentHand.append(card)
         else:
+            # Hand won
             for card in table:
                 print(show(card), end=' ')
                 playerHand.append(card)
-        print('\n')
+        # Report status and return
+        print(f'\nYou {"won" if playerCard > opponentCard else "lost"} this hand...'
+              f'{len(playerHand)} cards in your hand, {len(opponentHand)} in your opponent\'s.')
         return playerHand, opponentHand, None
 
     # If war must go on, recurse
-    return makeWar(playerHand, opponentHand, table)
+    return makeWar(playerHand, opponentHand, table, control)
 
 
 if __name__ == '__main__':
+    # Allow user to select manual or automatic control
+    controlOption = '_'
+    while controlOption not in ['M', 'A']:
+        controlOption = input("""
+        Welcome to WAR!
+        If you want to play the game manually, enter 'M'.
+        For automatic play, enter 'A'."
+        """)
+        controlOption = controlOption.upper()
+
+    # Begin the game
+    print("Here we go!")
     myCards, yourCards = deal()
+    myCards, yourCards = takeATurn(myCards, yourCards, controlOption)
+
+    # Continue the game
     while myCards and yourCards:
-        # TODO: Implement user control
-        myCards, yourCards = takeATurn(myCards, yourCards)
+        if controlOption == 'M':
+            input("Hit any key to continue.")
+        myCards, yourCards = takeATurn(myCards, yourCards, controlOption)
+
+    # End the game
     if myCards:
         print("You win!")
     else:
