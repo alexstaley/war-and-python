@@ -27,7 +27,7 @@ even if they have a stake in the cards currently on the table.
 Since the players' hands necessarily total to 52 cards, seven back-to-back wars
 would need to take place, with equal initial hand sizes, for this to occur.
 In this case, the win simply goes to the human (which honestly feels like a cop-out solution,
-but I'd rather cop out than bloat the code to dress up a one in ~60 million case. And anyway,
+but I'd rather cop out than bloat the code to dress up such a rare case. And anyway,
 we humans need SOME kind of edge).
 
 ### Future development: ###

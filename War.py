@@ -11,7 +11,7 @@ def show(value):
     :return: string ['2' - 'Ace']
     """
     if value < 0 or value > 12:
-        raise ValueError(f"value {value} must be between [0 - 12]")
+        raise ValueError(f'value {value} must be between [0 - 12]')
 
     if value == 9:
         return "Jack"
@@ -27,7 +27,7 @@ def show(value):
 
 def deal():
     """
-    Generates a list (deck) of 52 integers (cards), 4 each of the values [0-12].
+    Generates a list (deck) of 52 integers (cards), 4 each of the values [0 - 12].
     Deals half the cards, chosen at random, to each of two hands, returning both hands.
     :return: a tuple of two double-ended queue (deque) objects
     """
@@ -40,9 +40,9 @@ def deal():
     # Deal the entire deck in random order, alternating between players
     while deck:
         u = rd.randint(0, len(deck) - 1)
-        opponentHand.append(deck.pop(u))
+        playerHand.append(deck.pop(u))
         i = rd.randint(0, len(deck) - 1)
-        playerHand.append(deck.pop(i))
+        opponentHand.append(deck.pop(i))
 
     return playerHand, opponentHand
 
@@ -164,9 +164,9 @@ if __name__ == '__main__':
     controlOption = '_'
     while controlOption not in ['M', 'A']:
         controlOption = input("""
-        Welcome to WAR!
-        If you want to play the game manually, enter 'M'.
-        For automatic play, enter 'A'."
+            Welcome to WAR!
+            If you want to play the game manually, enter 'M'.
+            For automatic play, enter 'A'."
         """)
         controlOption = controlOption.upper()
 
