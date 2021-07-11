@@ -49,7 +49,7 @@ class TestTakeATurn(unittest.TestCase):
         hand1 = co.deque()
         hand2 = co.deque()
         hand1.append(1)
-        hand1.append(2)
+        hand1.append(2)  # hand2 stays empty
 
         hand1, hand2 = takeATurn(hand1, hand2, 'A')
 
@@ -67,6 +67,22 @@ class TestTakeATurn(unittest.TestCase):
 
         self.assertIn(1, hand2)
         self.assertIn(2, hand2)
+        self.assertNotIn(1, hand1)
+
+    def test_expected_hand_lengths(self):
+        # Tests that a regular hand leaves both players with the expected number of cards
+        hand1 = co.deque()
+        hand2 = co.deque()
+        hand1.append(1)
+        hand2.append(2)
+        for _ in range(25):
+            hand1.append(0)
+            hand2.append(0)
+
+        hand1, hand2 = takeATurn(hand1, hand2, 'A')
+
+        self.assertEqual(len(hand1), 25)
+        self.assertEqual(len(hand2), 27)
 
 
 class TestMakeWar(unittest.TestCase):
@@ -79,7 +95,7 @@ class TestMakeWar(unittest.TestCase):
             hand2.append(0)
         hand1.append(1)
         hand2.append(2)
-        table = [5, 5]
+        table = [5, 5]  # Matching 5s ('7's) start a war
 
         hand1, hand2, table = makeWar(hand1, hand2, table, 'A')
 
@@ -98,7 +114,7 @@ class TestMakeWar(unittest.TestCase):
 
         hand1, hand2, table = makeWar(hand1, hand2, table, 'A')
 
-        self.assertIsNone(hand2)
+        self.assertIsNone(hand2)  # hand2 == None -> hand1 wins the game
 
     def test_multiple_wars_take_table(self):
         # Tests that serial wars leave the table empty
@@ -128,7 +144,7 @@ class TestMakeWar(unittest.TestCase):
 
         hand1, hand2, table = makeWar(hand1, hand2, table, 'A')
 
-        self.assertFalse(hand1)
+        self.assertEqual(len(hand1), 0)
 
     def test_multiple_wars_cards_go_to_winner(self):
         # Tests that serial wars leave the winner with the expected number of cards
@@ -146,7 +162,7 @@ class TestMakeWar(unittest.TestCase):
         self.assertEqual(len(hand2), 18)
 
     def test_human_wins_seven_war_marathon(self):
-        # Tests that rare seven-war case that leaves all cards on the table leads to a human win
+        # Tests that rare seven-war case that puts all cards on the table leads to a human win
         handHuman = co.deque()
         hand2 = co.deque()
         for _ in range(25):
@@ -154,7 +170,7 @@ class TestMakeWar(unittest.TestCase):
             hand2.append(0)
         table = [5, 5]
 
-        handHuman, hand2, table = makeWar(handHuman, hand2, table, 'A')
+        handHuman, hand2, table = makeWar(handHuman, hand2, table, 'A')  # First argument == user's hand
 
         self.assertIsNotNone(handHuman)
         self.assertIsNone(hand2)

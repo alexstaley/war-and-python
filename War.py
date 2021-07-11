@@ -11,7 +11,7 @@ def show(value):
     :return: string ['2' - 'Ace']
     """
     if value < 0 or value > 12:
-        raise ValueError(f"value {value} must be between [0-12]")
+        raise ValueError(f"value {value} must be between [0 - 12]")
 
     if value == 9:
         return "Jack"
@@ -52,7 +52,7 @@ def takeATurn(playerHand, opponentHand, control):
     Resolves a turn of war given each player's hand. Wraps the recursive 'makeWar' function.
     :param playerHand: collections.deque object representing the user's hand
     :param opponentHand: collections.deque object representing the opponent's hand
-    :param control: controls if play should continue automatically or manually
+    :param control: String == 'A' or 'M', controls if play should continue automatically or manually
     :return: tuple containing the players' hands after a turn (including all necessary wars) has resolved
     """
     # Draw cards; guard against empty hands
@@ -60,7 +60,7 @@ def takeATurn(playerHand, opponentHand, control):
         playerCard = playerHand.popleft()
         opponentCard = opponentHand.popleft()
     except IndexError:
-        # Someone is out of cards; the game is over
+        # Someone is out of cards; return the losing hand as None
         print(f'{"You" if not playerHand else "Your opponent"} just ran out of cards!')
         if not playerHand:
             return None, opponentHand
@@ -95,12 +95,12 @@ def takeATurn(playerHand, opponentHand, control):
 def makeWar(playerHand, opponentHand, table, control):
     """
     Handles cards in the players' hands and on the table in the event of a war,
-    handling the case of serial wars recursively.
-    Returns with one hand empty if the game ends; with the table empty if/when the war ends.
+    handling the case of serial wars recursively. Returns with one hand == None
+    if the game ends; with the table == None if/when the war ends.
     :param playerHand: collections.deque object representing the user's hand
     :param opponentHand: collections.deque object representing the opponent's hand
     :param table: list of integers representing the cards currently on the table
-    :param control: controls if play should continue automatically or manually
+    :param control: String == 'A' or 'M', controls if play should continue automatically or manually
     :return: tuple containing both players' hands, plus the list of cards on the table
     """
     # Put war cards face down on the table; guard against the game ending during/after this process
@@ -128,7 +128,7 @@ def makeWar(playerHand, opponentHand, table, control):
 
     # If playing manually, trigger next draw
     if control == 'M':
-        input("Hit any key to continue.")
+        input("Hit enter to continue.")
 
     # Draw next cards to settle war
     playerCard = playerHand.popleft()
@@ -178,7 +178,7 @@ if __name__ == '__main__':
     # Continue the game
     while myCards and yourCards:
         if controlOption == 'M':
-            input("Hit any key to continue.")
+            input("Hit enter to continue.")
         myCards, yourCards = takeATurn(myCards, yourCards, controlOption)
 
     # End the game
