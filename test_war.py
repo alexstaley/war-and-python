@@ -102,19 +102,23 @@ class TestMakeWar(unittest.TestCase):
         self.assertIsNone(table)
 
     def test_not_enough_cards_for_war(self):
-        # Tests that a player running out of cards mid-war ends the game gracefully
-        hand1 = co.deque()
-        hand2 = co.deque()
-        for _ in range(2):
-            hand1.append(0)
-            hand2.append(0)
-        hand1.append(1)
-        hand1.append(2)
-        table = [5, 5]
+        # Tests that a player running out of cards at all mid-war points ends the game gracefully
+        for cards in range(4):
+            hand1 = co.deque()
+            hand2 = co.deque()
+            for _ in range(cards):
+                hand1.append(0)
+                hand2.append(0)
+            hand1.append(1)
+            hand1.append(2)
+            hand1.append(3)
+            hand1.append(4)
+            table = [5, 5]
 
-        hand1, hand2, table = makeWar(hand1, hand2, table, 'A')
+            hand1, hand2, table = makeWar(hand1, hand2, table, 'A')
 
-        self.assertIsNone(hand2)  # hand2 == None -> hand1 wins the game
+            self.assertIsNone(hand2)  # hand2 == None -> hand1 wins the game
+            self.assertIsNotNone(hand1)
 
     def test_multiple_wars_take_table(self):
         # Tests that serial wars leave the table empty
